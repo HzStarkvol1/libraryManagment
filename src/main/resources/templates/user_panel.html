@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{panel.user.title}">Üye Paneli - Library SaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f172a',
+                        secondary: '#334155',
+                        brand: '#2563eb',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 font-sans antialiased text-slate-800 min-h-screen">
+    
+    <script th:if="${isTempSession}">
+        if (!document.referrer.includes(window.location.host) && !sessionStorage.getItem('activeSession')) {
+            window.location.replace('/logout');
+        } else {
+            sessionStorage.setItem('activeSession', 'true');
+        }
+    </script>
+
+    <div class="fixed bottom-4 right-4 z-50">
+        <div class="bg-white border border-slate-200 shadow-sm rounded-lg flex text-sm overflow-hidden p-1 gap-1">
+            <a href="/user_panel?lang=tr" class="px-3 py-1.5 rounded transition-colors" th:classappend="${#locale.language == 'tr'} ? 'bg-brand text-white font-medium' : 'text-slate-500 hover:bg-slate-50'" th:text="#{lang.tr}">TR</a>
+            <a href="/user_panel?lang=en" class="px-3 py-1.5 rounded transition-colors" th:classappend="${#locale.language == 'en'} ? 'bg-brand text-white font-medium' : 'text-slate-500 hover:bg-slate-50'" th:text="#{lang.en}">EN</a>
+        </div>
+    </div>
+
+    <!-- Confirm Logout Modal -->
+    <div id="logoutModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-slate-900 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeLogoutModal()"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fas fa-sign-out-alt text-red-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                            <h3 class="text-lg leading-6 font-medium text-slate-900" id="modal-title" th:text="#{modal.logout.title}">Çıkış Yap</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-slate-500" th:text="#{modal.logout.desc}">Çıkış yapmak istediğinizden emin misiniz?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-slate-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-slate-200">
+                    <a href="/logout" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm" th:text="#{modal.yes}">
+                        Evet, Onaylıyorum
+                    </a>
+                    <button type="button" onclick="closeLogoutModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-slate-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" th:text="#{modal.cancel}">
+                        İptal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function openLogoutModal() { document.getElementById('logoutModal').classList.remove('hidden'); }
+        function closeLogoutModal() { document.getElementById('logoutModal').classList.add('hidden'); }
+    </script>
+
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-slate-200 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <div class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-slate-100 text-brand">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <span class="text-xl font-bold text-slate-900 tracking-tight" th:text="#{app.title}">Kütüphane</span>
+                    <span class="ml-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800" th:text="#{panel.user.badge}">Üye Paneli</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-sm">
+                        <span class="text-slate-500" th:text="#{panel.session}">Oturum:</span>
+                        <span class="font-medium text-slate-900" th:text="${user.name}">Üye Adı</span>
+                    </div>
+                    <button type="button" onclick="openLogoutModal()" class="inline-flex items-center justify-center px-4 py-2 border border-slate-200 rounded-lg shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand hover:text-red-600 transition-colors">
+                        <i class="fas fa-sign-out-alt mr-2"></i> <span th:text="#{panel.logout}">Çıkış Yap</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        
+        <!-- Active Book Status -->
+        <div th:if="${activeBook != null}" class="mb-8 bg-blue-50 border border-blue-200 rounded-2xl p-6 flex items-start gap-4 shadow-sm">
+            <div class="mt-1 flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                <i class="fas fa-book-reader text-lg"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-semibold text-blue-900" th:text="#{user.activebook.title}">Mevcut Kitabınız</h3>
+                <p class="text-sm text-blue-700 mt-1">
+                    <span class="font-medium" th:text="${activeBook.name}"></span> 
+                    <span th:if="${activeBook.status == 'REQUESTED'}" class="font-bold" th:text="#{user.activebook.req}">adlı kitabı ödünç almak için başvuruda bulundunuz. Onay bekleniyor.</span>
+                    <span th:if="${activeBook.status == 'BORROWED'}" class="font-bold" th:text="#{user.activebook.bor}">ödünç aldınız. İyi okumalar!</span>
+                </p>
+                <p class="text-xs text-blue-600 mt-2"><i class="fas fa-info-circle mr-1"></i><span th:text="#{user.activebook.info}">Her üye aynı anda sadece 1 adet kitap ödünç alabilir veya başvuru yapabilir.</span></p>
+            </div>
+        </div>
+        
+        <div th:if="${error == 'already_borrowed'}" class="mb-4 bg-red-50 border border-red-200 text-red-600 rounded-lg p-4 text-sm flex items-center shadow-sm">
+            <i class="fas fa-exclamation-circle mr-3"></i>
+            <span th:text="#{user.error.borrowed}">Zaten ödünç aldığınız veya onay bekleyen bir kitabınız var. Lütfen önce onu teslim ediniz.</span>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 overflow-hidden mb-8">
+            <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-lg font-semibold text-slate-900" th:text="#{user.search.title}">Kitap Listesi</h2>
+                    <p class="text-sm text-slate-500 mt-1" th:text="#{user.search.subtitle}">İsme veya ID numarasına göre arama yapabilirsiniz.</p>
+                </div>
+                
+                <!-- Search Form -->
+                <form action="/user_panel" method="GET" class="w-full sm:w-80 relative flex items-center">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-slate-400 text-sm"></i>
+                    </div>
+                    <input type="text" name="q" th:value="${query}"
+                        class="block w-full pl-9 pr-20 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand text-sm transition-colors outline-none bg-slate-50 focus:bg-white placeholder-slate-400" 
+                        th:placeholder="#{user.search.placeholder}">
+                    <button type="submit" class="absolute right-1 top-1 bottom-1 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-md transition-colors border border-slate-200" th:text="#{user.search.button}">
+                        Ara
+                    </button>
+                </form>
+            </div>
+            
+            <div class="p-0">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider" th:text="#{table.id}">ID</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider" th:text="#{table.name}">İsim</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-slate-500 uppercase tracking-wider" th:text="#{table.status}">Durum</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider" th:text="#{table.action}">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-slate-200">
+                        <tr th:if="${books.empty}">
+                            <td colspan="4" class="px-6 py-12 text-center">
+                                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 text-slate-400 mb-3">
+                                    <i class="fas fa-search text-xl"></i>
+                                </div>
+                                <h3 class="text-sm font-medium text-slate-900" th:text="#{table.empty}">Kitap Bulunamadı</h3>
+                                <p class="text-sm text-slate-500 mt-1" th:text="#{table.empty.desc}">Arama kriterlerinize uygun kitap kalmamış veya henüz eklenmemiş.</p>
+                                <a th:if="${query != null}" href="/user_panel" class="mt-4 inline-block text-sm text-brand font-medium hover:underline" th:text="#{table.showall}">Tüm Kitapları Göster</a>
+                            </td>
+                        </tr>
+                        <tr th:each="book : ${books}" class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500 font-medium" th:text="${'#' + book.id}">#1</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-900 font-medium flex items-center">
+                                <i class="fas fa-book text-slate-400 mr-3"></i>
+                                <span th:text="${book.name}">1984</span>
+                                <span class="ml-2 text-xs font-normal text-slate-400" th:text="${'(' + book.pageCount + ' ' + ( #locale.language == 'tr' ? 'Sayfa' : 'Pages' ) + ')'}"></span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm">
+                                <span th:if="${book.status == 'AVAILABLE'}" class="px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800" th:text="#{status.avail}">Boşta</span>
+                                <span th:if="${book.status != 'AVAILABLE' && book.borrowerId != user.id}" class="px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800" th:text="#{status.taken}">Bir başkası tarafından ödünç alındı</span>
+                                <span th:if="${book.borrowerId == user.id && book.status == 'REQUESTED'}" class="px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800" th:text="#{status.req}">Onay Bekliyor</span>
+                                <span th:if="${book.borrowerId == user.id && book.status == 'BORROWED'}" class="px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800" th:text="#{status.bor}">Sizde Okunuyor</span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                                <form th:if="${book.status == 'AVAILABLE' && activeBook == null}" action="/user/book/request" method="POST" class="inline">
+                                    <input type="hidden" name="id" th:value="${book.id}">
+                                    <button type="submit" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-brand hover:bg-blue-700 focus:outline-none transition-colors" th:text="#{btn.apply}">
+                                        Ödünç Almak İçin Başvur
+                                    </button>
+                                </form>
+                                <button th:if="${book.status == 'AVAILABLE' && activeBook != null}" disabled type="button" class="inline-flex items-center px-3 py-1.5 border border-slate-200 text-xs font-medium rounded-md text-slate-400 bg-slate-50 cursor-not-allowed" th:text="#{btn.noapply}">
+                                    Başvuramazsınız
+                                </button>
+                                <span th:if="${book.status != 'AVAILABLE'}" class="text-slate-400 text-xs">-</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    </main>
+
+</body>
+</html>

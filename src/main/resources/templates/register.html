@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{register.title}">Yeni Üye Kaydı - Library SaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f172a',
+                        secondary: '#334155',
+                        brand: '#2563eb',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen font-sans antialiased text-slate-800">
+
+    <div class="fixed bottom-4 right-4 z-50">
+        <div class="bg-white border border-slate-200 shadow-sm rounded-lg flex text-sm overflow-hidden p-1 gap-1">
+            <a href="/register?lang=tr" class="px-3 py-1.5 rounded transition-colors" th:classappend="${#locale.language == 'tr'} ? 'bg-brand text-white font-medium' : 'text-slate-500 hover:bg-slate-50'" th:text="#{lang.tr}">TR</a>
+            <a href="/register?lang=en" class="px-3 py-1.5 rounded transition-colors" th:classappend="${#locale.language == 'en'} ? 'bg-brand text-white font-medium' : 'text-slate-500 hover:bg-slate-50'" th:text="#{lang.en}">EN</a>
+        </div>
+    </div>
+
+    <main class="w-full max-w-[400px] px-4 sm:px-0">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white shadow-sm border border-slate-100 text-brand mb-4">
+                <i class="fas fa-user-plus text-xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight" th:text="#{register.title}">Yeni Üye Kaydı</h1>
+            <p class="text-sm text-slate-500 mt-2" th:text="#{register.subtitle}">Kütüphane sistemine katılmak için bilgilerinizi doldurun.</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 overflow-hidden">
+            <div class="p-6 sm:p-8">
+                <form action="/register" method="POST" class="space-y-4" autocomplete="off">
+                    <input style="display:none" type="text" name="fakeusernameremembered" autocomplete="email"/>
+                    <input style="display:none" type="password" name="fakepasswordremembered" autocomplete="new-password"/>
+
+                    <div class="space-y-1.5">
+                        <label for="name" class="block text-sm font-medium text-slate-700" th:text="#{register.name}">Ad Soyad</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-slate-400 text-sm"></i>
+                            </div>
+                            <input type="text" id="name" name="name" required autocomplete="nope" readonly onfocus="this.removeAttribute('readonly');"
+                                class="block w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand text-sm transition-colors outline-none bg-slate-50 focus:bg-white placeholder-slate-400" 
+                                placeholder="Ahmet Yılmaz">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="email" class="block text-sm font-medium text-slate-700" th:text="#{login.email}">E-posta adresi</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-envelope text-slate-400 text-sm"></i>
+                            </div>
+                            <input type="email" id="email" name="email" required autocomplete="nope" readonly onfocus="this.removeAttribute('readonly');"
+                                class="block w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand text-sm transition-colors outline-none bg-slate-50 focus:bg-white placeholder-slate-400" 
+                                placeholder="ornek@email.com">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="password" class="block text-sm font-medium text-slate-700" th:text="#{login.password}">Şifre</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-slate-400 text-sm"></i>
+                            </div>
+                            <input type="password" id="password" name="password" required autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');"
+                                class="block w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand text-sm transition-colors outline-none bg-slate-50 focus:bg-white placeholder-slate-400" 
+                                placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <button type="submit" 
+                        class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 mt-6">
+                        <span th:text="#{register.button}">Kayıt Ol</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="mt-6 text-center text-sm text-slate-500">
+            <span th:text="#{register.haveaccount}">Zaten hesabınız var mı?</span> <a href="/" class="font-medium text-brand hover:text-blue-700 transition-colors" th:text="#{register.login}">Giriş Yap</a>
+        </div>
+    </main>
+
+</body>
+</html>

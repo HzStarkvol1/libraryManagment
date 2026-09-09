@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{app.title}">Giriş Yap - Library SaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f172a',
+                        secondary: '#334155',
+                        brand: '#2563eb',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .tab-transition { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen font-sans antialiased text-slate-800">
+
+    <!-- Language Selector -->
+    <div class="fixed bottom-4 right-4 z-50">
+        <div class="bg-white border border-slate-200 shadow-sm rounded-lg flex text-sm overflow-hidden p-1 gap-1">
+            <a href="/?lang=tr" class="px-3 py-1.5 rounded transition-colors" th:classappend="${#locale.language == 'tr'} ? 'bg-brand text-white font-medium' : 'text-slate-500 hover:bg-slate-50'" th:text="#{lang.tr}">TR</a>
+            <a href="/?lang=en" class="px-3 py-1.5 rounded transition-colors" th:classappend="${#locale.language == 'en'} ? 'bg-brand text-white font-medium' : 'text-slate-500 hover:bg-slate-50'" th:text="#{lang.en}">EN</a>
+        </div>
+    </div>
+
+    <main class="w-full max-w-[400px] px-4 sm:px-0">
+        <!-- Logo / Icon -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-white shadow-sm border border-slate-100 text-brand mb-4">
+                <i class="fas fa-layer-group text-xl"></i>
+            </div>
+            <h1 class="text-2xl font-bold text-slate-900 tracking-tight" id="page-title" th:text="#{login.welcome}">Hoş Geldiniz</h1>
+            <p class="text-sm text-slate-500 mt-2" th:text="#{login.subtitle}">Devam etmek için hesabınıza giriş yapın.</p>
+        </div>
+        
+        <div th:if="${param.error}" class="mb-4 bg-red-50 border border-red-200 text-red-600 rounded-lg p-4 text-sm flex items-center shadow-sm">
+            <i class="fas fa-exclamation-circle mr-3"></i>
+            <span th:text="#{login.error}">Hatalı e-posta veya şifre girdiniz.</span>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 overflow-hidden">
+            
+            <!-- Type Selector Tabs -->
+            <div class="p-2 border-b border-slate-100 bg-slate-50/50">
+                <div class="flex p-1 space-x-1 bg-slate-200/50 rounded-lg">
+                    <button id="tab-member" onclick="switchLoginType('member')" type="button" 
+                        class="tab-transition flex-1 py-1.5 text-sm font-medium rounded-md bg-white shadow-sm text-slate-900 focus:outline-none" th:text="#{login.tab.member}">
+                        Üye Girişi
+                    </button>
+                    <button id="tab-admin" onclick="switchLoginType('admin')" type="button" 
+                        class="tab-transition flex-1 py-1.5 text-sm font-medium rounded-md text-slate-500 hover:text-slate-700 focus:outline-none" th:text="#{login.tab.admin}">
+                        Yönetici Girişi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Login Form -->
+            <div class="p-6 sm:p-8">
+                <form id="loginForm" action="/login" method="POST" class="space-y-4" autocomplete="off">
+                    <input style="display:none" type="email" name="fakeusernameremembered" autocomplete="email"/>
+                    <input style="display:none" type="password" name="fakepasswordremembered" autocomplete="current-password"/>
+
+                    <input type="hidden" name="userType" id="userType" value="member">
+                    
+                    <div class="space-y-1.5">
+                        <label for="email" class="block text-sm font-medium text-slate-700" th:text="#{login.email}">E-posta adresi</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-envelope text-slate-400 text-sm"></i>
+                            </div>
+                            <input type="email" id="email" name="email" required autocomplete="nope" readonly onfocus="this.removeAttribute('readonly');"
+                                class="block w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand text-sm transition-colors outline-none bg-slate-50 focus:bg-white placeholder-slate-400" 
+                                placeholder="ornek@email.com">
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <label for="password" class="block text-sm font-medium text-slate-700" th:text="#{login.password}">Şifre</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-slate-400 text-sm"></i>
+                            </div>
+                            <input type="password" id="password" name="password" required autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');"
+                                class="block w-full pl-9 pr-3 py-2.5 border border-slate-200 rounded-lg focus:ring-2 focus:ring-brand focus:border-brand text-sm transition-colors outline-none bg-slate-50 focus:bg-white placeholder-slate-400" 
+                                placeholder="••••••••">
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between pt-2">
+                        <div class="flex items-center">
+                            <input id="remember-me" name="remember-me" type="checkbox" 
+                                class="h-4 w-4 text-brand focus:ring-brand border-slate-300 rounded cursor-pointer">
+                            <label for="remember-me" class="ml-2 block text-sm text-slate-600 cursor-pointer select-none" th:text="#{login.remember}">
+                                Beni hatırla
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitBtn"
+                        class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-slate-900 hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 mt-6">
+                        <span th:text="#{login.button}">Giriş Yap</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="mt-6 text-center text-sm text-slate-500">
+            <span th:text="#{login.noaccount}">Hesabınız yok mu?</span> <a href="/register" class="font-medium text-brand hover:text-blue-700 transition-colors" th:text="#{login.register}">Oluşturun</a>
+        </div>
+    </main>
+
+    <script th:inline="javascript">
+        function switchLoginType(type) {
+            const memberBtn = document.getElementById('tab-member');
+            const adminBtn = document.getElementById('tab-admin');
+            const userTypeInput = document.getElementById('userType');
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (type === 'member') {
+                memberBtn.classList.add('bg-white', 'shadow-sm', 'text-slate-900');
+                memberBtn.classList.remove('text-slate-500');
+                
+                adminBtn.classList.remove('bg-white', 'shadow-sm', 'text-slate-900');
+                adminBtn.classList.add('text-slate-500');
+                userTypeInput.value = 'member';
+                submitBtn.classList.remove('bg-brand', 'hover:bg-blue-700', 'focus:ring-brand');
+                submitBtn.classList.add('bg-slate-900', 'hover:bg-slate-800', 'focus:ring-slate-900');
+            } else {
+                adminBtn.classList.add('bg-white', 'shadow-sm', 'text-slate-900');
+                adminBtn.classList.remove('text-slate-500');
+                
+                memberBtn.classList.remove('bg-white', 'shadow-sm', 'text-slate-900');
+                memberBtn.classList.add('text-slate-500');
+                userTypeInput.value = 'admin';
+                submitBtn.classList.remove('bg-slate-900', 'hover:bg-slate-800', 'focus:ring-slate-900');
+                submitBtn.classList.add('bg-brand', 'hover:bg-blue-700', 'focus:ring-brand');
+            }
+        }
+    </script>
+</body>
+</html>
